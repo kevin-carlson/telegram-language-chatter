@@ -1,0 +1,9 @@
+# This directory contains your language learning materials
+# Supported formats:
+# - .txt, .md - Text notes
+# - .pptx - PowerPoint presentations
+# - .docx - Word documents
+# - .pdf - PDF documents
+
+# Add your tutor notes, lesson slides, and other learning materials here.
+# The bot will use them as context for conversations.

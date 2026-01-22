@@ -1,0 +1,16 @@
+version: '3.8'
+
+# Simple docker-compose without MySQL
+# Use this for lightweight deployment
+
+services:
+  bot:
+    build: .
+    container_name: language-chatter-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - USE_DATABASE=false
+    volumes:
+      - ./reference-materials:/app/reference-materials:ro
