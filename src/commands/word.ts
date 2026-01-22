@@ -32,7 +32,7 @@ export async function handleWordCommand(ctx: Context): Promise<void> {
     }
 
     const content = await triggerDailyWord(botInstance, chatId, referenceMaterials);
-    await ctx.reply(content, { parse_mode: 'Markdown' });
+    await ctx.reply(content);
   } catch (error) {
     console.error('Word command error:', error);
     await ctx.reply('Sorry, I had trouble generating the word of the day. Please try again.');
