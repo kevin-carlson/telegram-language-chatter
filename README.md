@@ -207,6 +207,125 @@ The bot adjusts its responses based on your level:
 
 Change your level anytime with `/level [beginner/intermediate/advanced]`
 
+## Recommended Models by Language
+
+Different AI models have varying strengths for different languages. Here are our recommendations:
+
+### Chinese (Mandarin/Taiwanese Mandarin/Cantonese)
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| **Gemini** | `gemini-2.0-flash` | Excellent for Chinese, fast responses, good cultural context |
+| **Gemini** | `gemini-2.5-pro-preview-tts` | Best TTS for Mandarin pronunciation |
+| **OpenAI** | `gpt-4o` | Strong Chinese ability, excellent explanations |
+| OpenAI | `gpt-4o-mini` | Budget option, still good for basic conversations |
+
+**Recommended setup for Mandarin:**
+```env
+AI_PROVIDER=gemini
+GEMINI_MODEL=gemini-2.0-flash
+GEMINI_TTS_MODEL=gemini-2.5-pro-preview-tts
+```
+
+### Japanese
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| **Gemini** | `gemini-2.0-flash` | Excellent kanji/hiragana/katakana handling |
+| **OpenAI** | `gpt-4o` | Strong Japanese, good at explaining grammar |
+| OpenAI | `gpt-4o-mini` | Decent for casual practice |
+
+**Recommended setup for Japanese:**
+```env
+AI_PROVIDER=gemini
+GEMINI_MODEL=gemini-2.0-flash
+TARGET_LANGUAGE=Japanese
+```
+
+### Korean
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| **Gemini** | `gemini-2.0-flash` | Good Hangul support, natural conversations |
+| **OpenAI** | `gpt-4o` | Strong Korean, excellent grammar explanations |
+
+**Recommended setup for Korean:**
+```env
+AI_PROVIDER=openai
+OPENAI_MODEL=gpt-4o
+TARGET_LANGUAGE=Korean
+```
+
+### Spanish / Portuguese / French / Italian
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| **OpenAI** | `gpt-4o` | Excellent for Romance languages |
+| **OpenAI** | `gpt-4o-mini` | Great budget option, very capable |
+| Gemini | `gemini-2.0-flash` | Good alternative, fast responses |
+
+**Recommended setup for Spanish:**
+```env
+AI_PROVIDER=openai
+OPENAI_MODEL=gpt-4o-mini
+TARGET_LANGUAGE=Spanish
+```
+
+### German / Dutch / Nordic Languages
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| **OpenAI** | `gpt-4o` | Strong Germanic language support |
+| Gemini | `gemini-2.0-flash` | Good alternative |
+
+### Arabic / Hebrew / Farsi
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| **OpenAI** | `gpt-4o` | Best RTL language support |
+| Gemini | `gemini-2.0-flash` | Capable but OpenAI edges ahead |
+
+### Russian / Ukrainian / Other Slavic
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| **OpenAI** | `gpt-4o` | Excellent Cyrillic support |
+| **Gemini** | `gemini-2.0-flash` | Also very capable |
+
+### Hindi / Thai / Vietnamese / Other Asian Languages
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| **Gemini** | `gemini-2.0-flash` | Generally better for less common Asian languages |
+| OpenAI | `gpt-4o` | Good but Gemini often has edge |
+
+### TTS (Text-to-Speech) Recommendations
+
+For pronunciation features (`/pronounce`), TTS quality varies by language:
+
+| Language | Best Provider | Model | Notes |
+|----------|---------------|-------|-------|
+| Chinese (Mandarin) | Gemini | `gemini-2.5-pro-preview-tts` | Excellent tones |
+| Japanese | Gemini | `gemini-2.5-pro-preview-tts` | Natural pitch accent |
+| Korean | Gemini | `gemini-2.5-pro-preview-tts` | Good pronunciation |
+| European Languages | OpenAI | `tts-1` | Very natural |
+| Spanish | OpenAI | `tts-1` | Excellent |
+| French | OpenAI | `tts-1` | Very natural |
+| German | OpenAI | `tts-1` | Good quality |
+
+**Note:** If using OpenAI for TTS, the bot automatically uses OpenAI's TTS API. Gemini TTS requires the `gemini-2.5-pro-preview-tts` model.
+
+### Cost Considerations
+
+| Model | Relative Cost | Best For |
+|-------|---------------|----------|
+| `gpt-4o-mini` | $ | Budget learning, high-volume practice |
+| `gemini-2.0-flash` | $ | Fast responses, good quality |
+| `gpt-4o` | $$$ | Complex grammar, detailed explanations |
+| `gemini-2.5-pro` | $$$$ | Advanced features, best quality |
+
+For most learners, `gemini-2.0-flash` or `gpt-4o-mini` provides excellent value.
+
 ## Architecture
 
 ```
