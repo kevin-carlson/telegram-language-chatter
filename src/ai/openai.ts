@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
 import { AIProvider, AIResponse, Message, TranscriptionResponse, TTSResponse } from './types';
 import { config } from '../config';
-import { Readable } from 'stream';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
