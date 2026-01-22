@@ -1,7 +1,7 @@
 import { Context } from 'telegraf';
 import { getLastBotMessage } from '../services/context';
 import { getAIProvider, buildPinyinPrompt } from '../ai';
-import { toPinyin, containsChinese, formatWithInlinePinyin } from '../utils/pinyin';
+import { toPinyin, containsChinese } from '../utils/pinyin';
 
 /**
  * Handle /pinyin command - get pinyin for the last bot message
@@ -31,33 +31,34 @@ export async function handlePinyinCommand(ctx: Context): Promise<void> {
   try {
     // Use local pinyin library for quick response
     const quickPinyin = toPinyin(lastMessage);
-    const inlinePinyin = formatWithInlinePinyin(lastMessage);
 
     // Also use AI for more detailed breakdown
     const ai = getAIProvider();
     const prompt = buildPinyinPrompt(lastMessage);
     const response = await ai.chat([{ role: 'user', content: prompt }]);
 
-    const reply = `📝 *Pinyin*
+    const reply = `📝 Pinyin
 
-*Quick pinyin:*
+Quick pinyin:
 ${quickPinyin}
 
-*Detailed breakdown:*
+Detailed breakdown:
 ${response.content}`;
 
-    await ctx.reply(reply, { parse_mode: 'Markdown' });
+    // Send without parse_mode to avoid issues with LLM-generated special characters
+    await ctx.reply(reply);
   } catch (error) {
     console.error('Pinyin command error:', error);
 
     // Fall back to local pinyin if AI fails
     const quickPinyin = toPinyin(lastMessage);
-    await ctx.reply(`📝 *Pinyin*\n\n${quickPinyin}`, { parse_mode: 'Markdown' });
+    await ctx.reply(`📝 Pinyin\n\n${quickPinyin}`);
   }
 }
 
 /**
  * Get pinyin for a specific text (used for replies)
+ * Note: Returns plain text to avoid Markdown parse errors with LLM content
  */
 export async function getPinyinForText(text: string): Promise<string> {
   if (!containsChinese(text)) {
@@ -71,14 +72,14 @@ export async function getPinyinForText(text: string): Promise<string> {
 
     const quickPinyin = toPinyin(text);
 
-    return `📝 *Pinyin*
+    return `📝 Pinyin
 
-*Quick:* ${quickPinyin}
+Quick: ${quickPinyin}
 
 ${response.content}`;
   } catch (error) {
     console.error('Pinyin generation error:', error);
     const quickPinyin = toPinyin(text);
-    return `📝 *Pinyin*\n\n${quickPinyin}`;
+    return `📝 Pinyin\n\n${quickPinyin}`;
   }
 }

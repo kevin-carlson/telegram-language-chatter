@@ -1,7 +1,7 @@
 import { config } from '../config';
 import { GeminiProvider } from './gemini';
 import { OpenAIProvider } from './openai';
-import { AIProvider, Message } from './types';
+import { AIProvider } from './types';
 
 export * from './types';
 
@@ -29,9 +29,10 @@ export function getAIProvider(): AIProvider {
  */
 export function buildSystemPrompt(
   referenceMaterials?: string,
-  tutorNotes?: string
+  tutorNotes?: string,
+  levelOverride?: string
 ): string {
-  const level = config.language.level;
+  const level = levelOverride || config.language.level;
   const target = config.language.target;
   const native = config.language.native;
 

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import chokidar from 'chokidar';
 import { config } from '../config';
 
 // Import document parsers
@@ -243,7 +244,7 @@ function truncateContent(content: string, maxLength: number): string {
 }
 
 /**
- * Watch the materials directory for changes (optional live reload)
+ * Watch the materials directory for changes (cross-platform using chokidar)
  */
 export function watchMaterialsDirectory(callback: () => void): void {
   const materialsDir = config.referenceMaterialsDir;
@@ -252,10 +253,42 @@ export function watchMaterialsDirectory(callback: () => void): void {
     return;
   }
 
-  fs.watch(materialsDir, { recursive: true }, (eventType, filename) => {
-    if (filename) {
-      console.log(`Reference materials changed: ${filename}`);
-      callback();
-    }
+  // Use chokidar for cross-platform file watching (works on Linux, macOS, Windows)
+  const watcher = chokidar.watch(materialsDir, {
+    persistent: true,
+    ignoreInitial: true,
+    awaitWriteFinish: {
+      stabilityThreshold: 500,
+      pollInterval: 100,
+    },
   });
+
+  // Debounce callback to avoid multiple rapid reloads
+  let debounceTimer: NodeJS.Timeout | null = null;
+  const debouncedCallback = () => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+    debounceTimer = setTimeout(() => {
+      callback();
+      debounceTimer = null;
+    }, 1000);
+  };
+
+  watcher
+    .on('add', (filePath) => {
+      console.log(`Reference material added: ${path.basename(filePath)}`);
+      debouncedCallback();
+    })
+    .on('change', (filePath) => {
+      console.log(`Reference material changed: ${path.basename(filePath)}`);
+      debouncedCallback();
+    })
+    .on('unlink', (filePath) => {
+      console.log(`Reference material removed: ${path.basename(filePath)}`);
+      debouncedCallback();
+    })
+    .on('error', (error) => {
+      console.error('File watcher error:', error);
+    });
 }

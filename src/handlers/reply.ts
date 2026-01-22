@@ -3,6 +3,7 @@ import { Message } from 'telegraf/types';
 import { getPinyinForText } from '../commands/pinyin';
 import { getTranslationForText } from '../commands/translate';
 import { getPronunciationForText } from '../commands/pronounce';
+import { getBotId } from '../utils/botInfo';
 
 // Keywords that trigger special reply actions
 const PINYIN_KEYWORDS = ['pinyin', '拼音', 'pīnyīn', 'romanization'];
@@ -18,9 +19,9 @@ export async function handleReply(ctx: Context): Promise<boolean> {
 
   const replyTo = message.reply_to_message as Message.TextMessage;
 
-  // Check if replying to a bot message
-  const botInfo = await ctx.telegram.getMe();
-  if (replyTo.from?.id !== botInfo.id) return false;
+  // Check if replying to a bot message using cached bot ID
+  const botId = getBotId();
+  if (!botId || replyTo.from?.id !== botId) return false;
 
   // Get the text being replied to
   const targetText = replyTo.text;
@@ -32,8 +33,8 @@ export async function handleReply(ctx: Context): Promise<boolean> {
   if (PINYIN_KEYWORDS.some(kw => userText.includes(kw))) {
     await ctx.sendChatAction('typing');
     const pinyin = await getPinyinForText(targetText);
+    // Send without parse_mode to avoid issues with LLM-generated special characters
     await ctx.reply(pinyin, {
-      parse_mode: 'Markdown',
       reply_to_message_id: message.message_id
     });
     return true;
@@ -43,8 +44,8 @@ export async function handleReply(ctx: Context): Promise<boolean> {
   if (TRANSLATE_KEYWORDS.some(kw => userText.includes(kw))) {
     await ctx.sendChatAction('typing');
     const translation = await getTranslationForText(targetText);
+    // Send without parse_mode to avoid issues with LLM-generated special characters
     await ctx.reply(translation, {
-      parse_mode: 'Markdown',
       reply_to_message_id: message.message_id
     });
     return true;

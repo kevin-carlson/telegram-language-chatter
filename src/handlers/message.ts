@@ -125,12 +125,11 @@ async function generateResponse(
 
   // Build system prompt with current level and materials
   const currentLevel = getCurrentLevel();
-  // Ensure the language config reflects the current (possibly overridden) level
-  config.language.level = currentLevel;
 
   const systemPrompt = buildSystemPrompt(
     handlerContext?.referenceMaterials,
-    undefined // Tutor notes are included in reference materials
+    undefined, // Tutor notes are included in reference materials
+    currentLevel
   );
 
   // Generate response

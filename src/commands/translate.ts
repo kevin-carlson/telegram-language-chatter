@@ -23,7 +23,8 @@ export async function handleTranslateCommand(ctx: Context): Promise<void> {
 
   try {
     const translation = await getTranslationForText(lastMessage);
-    await ctx.reply(translation, { parse_mode: 'Markdown' });
+    // Send without parse_mode to avoid issues with LLM-generated special characters
+    await ctx.reply(translation);
   } catch (error) {
     console.error('Translate command error:', error);
     await ctx.reply('Sorry, I had trouble generating the translation. Please try again.');
@@ -32,6 +33,7 @@ export async function handleTranslateCommand(ctx: Context): Promise<void> {
 
 /**
  * Get translation for a specific text (used for replies)
+ * Note: Returns plain text to avoid Markdown parse errors with LLM content
  */
 export async function getTranslationForText(text: string): Promise<string> {
   try {
@@ -39,9 +41,9 @@ export async function getTranslationForText(text: string): Promise<string> {
     const prompt = buildTranslationPrompt(text);
     const response = await ai.chat([{ role: 'user', content: prompt }]);
 
-    return `🔤 *Translation*
+    return `🔤 Translation
 
-*Original:*
+Original:
 ${text}
 
 ${response.content}`;

@@ -8,7 +8,6 @@ import {
 } from '../services/context';
 import { scheduleResponse, formatDelay } from '../services/delay';
 import { isInstantMode } from '../commands/instant';
-import { getCurrentLevel } from '../commands/level';
 import { config } from '../config';
 import https from 'https';
 import http from 'http';
@@ -95,9 +94,8 @@ export async function handleVoiceMessage(ctx: Context): Promise<void> {
     const transcription = await ai.transcribeAudio(audioBuffer, mimeType);
     const transcribedText = transcription.text;
 
-    // Send transcription to user
-    await ctx.reply(`🎤 *I heard:* "${transcribedText}"`, {
-      parse_mode: 'Markdown',
+    // Send transcription to user (without parse_mode to handle special characters)
+    await ctx.reply(`🎤 I heard: "${transcribedText}"`, {
       reply_to_message_id: messageId,
     });
 
@@ -131,8 +129,10 @@ export async function handleVoiceMessage(ctx: Context): Promise<void> {
         chatId,
         messageId,
         response,
-        async (cid, resp) => {
-          const sentMessage = await ctx.telegram.sendMessage(cid, resp);
+        async (cid, resp, replyTo) => {
+          const sentMessage = await ctx.telegram.sendMessage(cid, resp, {
+            reply_to_message_id: replyTo,
+          });
 
           // Store and save the bot's message
           await addMessage(

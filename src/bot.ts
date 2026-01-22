@@ -25,8 +25,12 @@ import { startDailyWordScheduler, stopDailyWordScheduler } from './services/sche
 import { initializeDatabase, closeDatabase } from './database';
 import { clearAllPendingResponses } from './services/delay';
 import { clearAllContexts } from './services/context';
+import { initializeBotInfo } from './utils/botInfo';
 
-let referenceMaterials: string = '';
+// Shared reference object for materials (allows updates to propagate)
+const sharedContext = {
+  referenceMaterials: '',
+};
 
 export async function createBot(): Promise<Telegraf> {
   // Initialize database if enabled
@@ -36,24 +40,27 @@ export async function createBot(): Promise<Telegraf> {
 
   // Load reference materials
   console.log('Loading reference materials...');
-  referenceMaterials = await loadReferenceMaterials();
+  sharedContext.referenceMaterials = await loadReferenceMaterials();
 
-  // Watch for material changes
+  // Watch for material changes (updates propagate via shared reference)
   watchMaterialsDirectory(async () => {
     console.log('Reloading reference materials...');
-    referenceMaterials = await loadReferenceMaterials();
+    sharedContext.referenceMaterials = await loadReferenceMaterials();
   });
 
   // Create bot
   const bot = new Telegraf(config.telegram.botToken);
 
+  // Cache bot info at startup
+  await initializeBotInfo(bot);
+
   // Add authentication middleware (must be first)
   bot.use(createAuthMiddleware());
 
-  // Set handler contexts
-  setMessageHandlerContext({ bot, referenceMaterials });
-  setVoiceHandlerContext({ bot, referenceMaterials });
-  setWordCommandContext(bot, referenceMaterials);
+  // Set handler contexts (using shared reference for live updates)
+  setMessageHandlerContext({ bot, get referenceMaterials() { return sharedContext.referenceMaterials; } });
+  setVoiceHandlerContext({ bot, get referenceMaterials() { return sharedContext.referenceMaterials; } });
+  setWordCommandContext(bot, sharedContext.referenceMaterials);
 
   // Register commands
   bot.command('start', async (ctx) => {
@@ -99,8 +106,8 @@ Ready to practice? Just send me a message in ${config.language.target} or ${conf
     ctx.reply('An error occurred. Please try again.').catch(console.error);
   });
 
-  // Start daily word scheduler
-  startDailyWordScheduler({ bot, referenceMaterials });
+  // Start daily word scheduler (using shared reference for live updates)
+  startDailyWordScheduler({ bot, get referenceMaterials() { return sharedContext.referenceMaterials; } });
 
   return bot;
 }

@@ -73,11 +73,9 @@ export async function sendDailyWord(
     // Save to database
     await saveDailyWord(word, pinyin, translation, content);
 
-    // Send to user
+    // Send to user (without parse_mode to avoid issues with LLM-generated special characters)
     const userId = config.telegram.userId;
-    await bot.telegram.sendMessage(userId, content, {
-      parse_mode: 'Markdown',
-    });
+    await bot.telegram.sendMessage(userId, content);
 
     console.log(`Daily word sent: ${word}`);
   } catch (error) {

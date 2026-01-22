@@ -58,17 +58,18 @@ export function scheduleResponse(
 }
 
 /**
- * Cancel a pending response by chat ID
+ * Cancel all pending responses for a chat ID
  */
 export function cancelPendingResponse(chatId: string): boolean {
+  let cancelled = false;
   for (const [key, pending] of pendingResponses.entries()) {
     if (key.startsWith(chatId + '-')) {
       clearTimeout(pending.timer);
       pendingResponses.delete(key);
-      return true;
+      cancelled = true;
     }
   }
-  return false;
+  return cancelled;
 }
 
 /**

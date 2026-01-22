@@ -23,16 +23,19 @@ WORKDIR /app
 
 # Copy package files and install production dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
 
-# Create reference materials directory
-RUN mkdir -p reference-materials
+# Create reference materials directory and set permissions
+RUN mkdir -p reference-materials && chown -R node:node /app
 
 # Set environment variables
 ENV NODE_ENV=production
+
+# Use non-root user for security
+USER node
 
 # Expose port for webhook (if used)
 EXPOSE 3000

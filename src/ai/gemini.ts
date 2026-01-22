@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, Content, Part } from '@google/generative-ai';
+import { GoogleGenerativeAI, Content } from '@google/generative-ai';
 import { AIProvider, AIResponse, Message, TranscriptionResponse, TTSResponse } from './types';
 import { config } from '../config';
 
