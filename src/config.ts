@@ -10,6 +10,8 @@ export interface Config {
   telegram: {
     botToken: string;
     userId: string;
+    allowedUserIds: string[];
+    restrictToAllowedUsers: boolean;
   };
   ai: {
     provider: AIProvider;
@@ -99,10 +101,18 @@ export function loadConfig(): Config {
     throw new Error('LEARNING_LEVEL must be beginner, intermediate, or advanced');
   }
 
+  // Parse allowed user IDs from comma-separated string
+  const allowedUserIdsStr = getEnvVar('ALLOWED_USER_IDS', '');
+  const allowedUserIds = allowedUserIdsStr
+    ? allowedUserIdsStr.split(',').map(id => id.trim()).filter(id => id)
+    : [];
+
   return {
     telegram: {
       botToken: getEnvVar('TELEGRAM_BOT_TOKEN'),
       userId: getEnvVar('TELEGRAM_USER_ID', ''),
+      allowedUserIds,
+      restrictToAllowedUsers: getEnvVarBool('RESTRICT_TO_ALLOWED_USERS', false),
     },
     ai: {
       provider,

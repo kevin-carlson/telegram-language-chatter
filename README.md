@@ -89,6 +89,8 @@ docker-compose up -d
 |----------|-------------|---------|
 | `TELEGRAM_BOT_TOKEN` | Your Telegram bot token | *required* |
 | `TELEGRAM_USER_ID` | Your Telegram user ID (for daily words) | - |
+| `RESTRICT_TO_ALLOWED_USERS` | Restrict bot to allowed users only | `false` |
+| `ALLOWED_USER_IDS` | Comma-separated list of allowed user IDs | - |
 | `AI_PROVIDER` | `openai` or `gemini` | `gemini` |
 | `OPENAI_API_KEY` | OpenAI API key | - |
 | `OPENAI_MODEL` | OpenAI model to use | `gpt-4o` |
@@ -115,6 +117,28 @@ docker-compose up -d
 1. Message [@userinfobot](https://t.me/userinfobot) on Telegram
 2. It will reply with your user ID
 3. Add this to `TELEGRAM_USER_ID` in your `.env`
+
+### User Access Control
+
+By default, the bot is open to anyone who messages it. To restrict access to specific users:
+
+```env
+# Enable restriction
+RESTRICT_TO_ALLOWED_USERS=true
+
+# Your user ID (automatically allowed when restriction is enabled)
+TELEGRAM_USER_ID=123456789
+
+# Additional allowed users (comma-separated)
+ALLOWED_USER_IDS=987654321,456789123
+```
+
+When restriction is enabled:
+- Only users in `ALLOWED_USER_IDS` or `TELEGRAM_USER_ID` can interact with the bot
+- Unauthorized users receive a polite rejection message
+- All unauthorized access attempts are logged
+
+This is recommended for public repositories to prevent unauthorized API usage.
 
 ## Bot Commands
 

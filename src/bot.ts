@@ -19,6 +19,7 @@ import {
   setMessageHandlerContext,
   setVoiceHandlerContext,
 } from './handlers';
+import { createAuthMiddleware, getAllowedUserIds } from './middleware';
 import { loadReferenceMaterials, watchMaterialsDirectory } from './services/materials';
 import { startDailyWordScheduler, stopDailyWordScheduler } from './services/scheduler';
 import { initializeDatabase, closeDatabase } from './database';
@@ -45,6 +46,9 @@ export async function createBot(): Promise<Telegraf> {
 
   // Create bot
   const bot = new Telegraf(config.telegram.botToken);
+
+  // Add authentication middleware (must be first)
+  bot.use(createAuthMiddleware());
 
   // Set handler contexts
   setMessageHandlerContext({ bot, referenceMaterials });
@@ -154,4 +158,11 @@ export async function startBot(bot: Telegraf): Promise<void> {
   console.log(`Learning Level: ${config.language.level}`);
   console.log(`Database: ${config.database.enabled ? 'Enabled' : 'Disabled'}`);
   console.log(`Response Delay: ${config.responseDelay.min}-${config.responseDelay.max} seconds`);
+
+  if (config.telegram.restrictToAllowedUsers) {
+    const allowedUsers = getAllowedUserIds();
+    console.log(`User Restriction: Enabled (${allowedUsers.length} allowed user${allowedUsers.length !== 1 ? 's' : ''})`);
+  } else {
+    console.log('User Restriction: Disabled (public access)');
+  }
 }
