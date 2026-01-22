@@ -60,7 +60,7 @@ export async function createBot(): Promise<Telegraf> {
   // Set handler contexts (using shared reference for live updates)
   setMessageHandlerContext({ bot, get referenceMaterials() { return sharedContext.referenceMaterials; } });
   setVoiceHandlerContext({ bot, get referenceMaterials() { return sharedContext.referenceMaterials; } });
-  setWordCommandContext(bot, sharedContext.referenceMaterials);
+  setWordCommandContext(() => sharedContext.referenceMaterials);
 
   // Register commands
   bot.command('start', async (ctx) => {

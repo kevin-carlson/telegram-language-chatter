@@ -95,11 +95,9 @@ export function stopDailyWordScheduler(): void {
 }
 
 /**
- * Manually trigger a daily word (for testing)
+ * Manually trigger a daily word (for testing or /word command)
  */
 export async function triggerDailyWord(
-  bot: Telegraf,
-  chatId: number,
   referenceMaterials?: string
 ): Promise<string> {
   try {

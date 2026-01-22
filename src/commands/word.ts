@@ -1,16 +1,15 @@
 import { Context } from 'telegraf';
 import { triggerDailyWord } from '../services/scheduler';
-import { Telegraf } from 'telegraf';
 
-let botInstance: Telegraf | null = null;
-let referenceMaterials: string | undefined;
+type MaterialsGetter = () => string | undefined;
+
+let getMaterials: MaterialsGetter = () => undefined;
 
 /**
- * Set the bot instance for the word command
+ * Set the materials getter for the word command
  */
-export function setWordCommandContext(bot: Telegraf, materials?: string): void {
-  botInstance = bot;
-  referenceMaterials = materials;
+export function setWordCommandContext(materialsGetter: MaterialsGetter): void {
+  getMaterials = materialsGetter;
 }
 
 /**
@@ -26,12 +25,9 @@ export async function handleWordCommand(ctx: Context): Promise<void> {
   await ctx.sendChatAction('typing');
 
   try {
-    if (!botInstance) {
-      await ctx.reply('Bot not properly initialized. Please try again later.');
-      return;
-    }
-
-    const content = await triggerDailyWord(botInstance, chatId, referenceMaterials);
+    // Get current materials via getter (reflects live updates)
+    const content = await triggerDailyWord(getMaterials());
+    // Send without parse_mode to avoid issues with LLM-generated special characters
     await ctx.reply(content);
   } catch (error) {
     console.error('Word command error:', error);

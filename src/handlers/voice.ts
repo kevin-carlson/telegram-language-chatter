@@ -8,6 +8,7 @@ import {
 } from '../services/context';
 import { scheduleResponse, formatDelay } from '../services/delay';
 import { isInstantMode } from '../commands/instant';
+import { getCurrentLevel } from '../commands/level';
 import { config } from '../config';
 import https from 'https';
 import http from 'http';
@@ -181,10 +182,12 @@ async function generateResponse(
     messages.push({ role: 'user', content: userMessage });
   }
 
-  // Build system prompt
+  // Build system prompt with current level
+  const currentLevel = getCurrentLevel();
   const systemPrompt = buildSystemPrompt(
     handlerContext?.referenceMaterials,
-    undefined
+    undefined,
+    currentLevel
   );
 
   // Generate response

@@ -33,6 +33,17 @@ export async function getChatContext(chatId: string): Promise<ChatContext> {
         role: m.role as 'user' | 'assistant',
         content: m.content,
       }));
+
+      // Restore lastBotMessage from the most recent assistant message
+      // This allows /pinyin, /translate, /pronounce to work after restart
+      for (let i = dbMessages.length - 1; i >= 0; i--) {
+        if (dbMessages[i].role === 'assistant') {
+          context.lastBotMessage = dbMessages[i].content;
+          // Note: messageId is not stored in DB, so commands will work
+          // but reply-to won't reference the original message
+          break;
+        }
+      }
     }
 
     chatContexts.set(chatId, context);
