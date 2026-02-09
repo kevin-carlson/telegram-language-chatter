@@ -24,8 +24,7 @@ Thumbs.db
 npm-debug.log*
 
 # Reference materials (user-specific)
-# Uncomment if you don't want to track these
-# reference-materials/*
+reference-materials/*
 # !reference-materials/.gitkeep
 
 # Temporary files

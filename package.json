@@ -27,7 +27,7 @@
     "dotenv": "^16.4.5",
     "mysql2": "^3.11.0",
     "node-schedule": "^2.1.1",
-    "officeparser": "^4.2.1",
+    "officeparser": "^6.0.0",
     "openai": "^4.68.0",
     "pdf-parse": "^1.1.1",
     "pinyin-pro": "^3.25.0",

@@ -150,12 +150,15 @@ export async function getRecentMessages(
   if (!pool) return [];
 
   try {
-    const [rows] = await pool.execute<mysql.RowDataPacket[]>(
+    // Use query() instead of execute() because prepared statements
+    // have issues with LIMIT clause parameters in MySQL2
+    const safeLimit = Math.max(1, Math.floor(Number(limit)));
+    const [rows] = await pool.query<mysql.RowDataPacket[]>(
       `SELECT * FROM messages
        WHERE chat_id = ?
        ORDER BY created_at DESC
-       LIMIT ?`,
-      [chatId, limit]
+       LIMIT ${safeLimit}`,
+      [chatId]
     );
 
     return (rows as MessageRecord[]).reverse();
@@ -195,9 +198,12 @@ export async function getPreviousDailyWords(limit: number = 30): Promise<string[
   if (!pool) return [];
 
   try {
-    const [rows] = await pool.execute<mysql.RowDataPacket[]>(
-      'SELECT word FROM daily_words ORDER BY sent_at DESC LIMIT ?',
-      [limit]
+    // Use query() instead of execute() because prepared statements
+    // have issues with LIMIT clause parameters in MySQL2
+    const safeLimit = Math.max(1, Math.floor(Number(limit)));
+    const [rows] = await pool.query<mysql.RowDataPacket[]>(
+      `SELECT word FROM daily_words ORDER BY sent_at DESC LIMIT ${safeLimit}`,
+      []
     );
 
     return (rows as { word: string }[]).map(r => r.word);

@@ -5,9 +5,9 @@ import { getTranslationForText } from '../commands/translate';
 import { getPronunciationForText } from '../commands/pronounce';
 import { getBotId } from '../utils/botInfo';
 
-// Keywords that trigger special reply actions
-const PINYIN_KEYWORDS = ['pinyin', '拼音', 'pīnyīn', 'romanization'];
-const TRANSLATE_KEYWORDS = ['translate', '翻译', 'translation', '翻譯', 'meaning', '意思'];
+// Keywords that trigger special reply actions (including /commands)
+const PINYIN_KEYWORDS = ['/pinyin', 'pinyin', '拼音', 'pīnyīn', 'romanization'];
+const TRANSLATE_KEYWORDS = ['/translate', 'translate', '翻译', 'translation', '翻譯', 'meaning', '意思'];
 const PRONOUNCE_KEYWORDS = ['pronounce', '发音', 'pronunciation', '發音', 'audio', 'speak', '读'];
 
 /**
